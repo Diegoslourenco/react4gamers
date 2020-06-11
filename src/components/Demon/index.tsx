@@ -1,10 +1,14 @@
 import React from 'react';
 import './index.css';
 import { TILE_SIZE, DEMON_TILE_SIZE, EDirection } from '../../settings/constants';
-import useEnemyMovement from '../../Hooks/UseEnemyMovement'
+import useEnemyMovement from '../../Hooks/UseEnemyMovement';
 
-const Demon = () => {
-  const movement = useEnemyMovement({ x:5, y:5 });
+interface IProps {
+  initialPosition: { x: number, y: number }
+}
+
+const Demon = (props: IProps) => {
+  const movement = useEnemyMovement(props.initialPosition);
 
   return(
     <div

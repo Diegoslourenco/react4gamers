@@ -1,9 +1,13 @@
 import useEventListener from '@use-it/event-listener';
 import React from 'react';
-import { EDirection } from '../../settings/constants';
-import { handleNextPosition } from '../../context/canvas/helpers';
+import { EDirection, Ewalker } from '../../settings/constants';
+import { CanvasContext } from '../../context/canvas';
+import { ChestsContext } from '../../context/chests';
 
 function useHeroMovement(inicialPosition) {
+  const canvasContext = React.useContext(CanvasContext);
+  const chestsContext = React.useContext(ChestsContext);
+
   const [positionState, updatePositionState] = React.useState(inicialPosition); //Retorna array [0, 1]
   const [direction, updateDirectionState] = React.useState(EDirection.RIGHT);
   
@@ -14,11 +18,27 @@ function useHeroMovement(inicialPosition) {
       return;
     }
 
-    const nextPosition = handleNextPosition(direction, positionState);
-    updatePositionState(nextPosition);
-    updateDirectionState(direction);
-    
+    const movement = canvasContext.updateCanvas(direction, positionState, Ewalker.HERO);
 
+    if (movement.nextMove.valid) {
+      updatePositionState(movement.nextPosition);
+      updateDirectionState(direction);
+    }
+
+    if (movement.nextMove.dead) {
+      setTimeout(() => {
+        alert('Você morreu!');
+      })
+      window.location.reload();
+    }
+
+    if (movement.nextMove.chest) {
+      chestsContext.updateOpenedChests(movement.nextPosition);
+    }
+
+    if(chestsContext.totalChests === chestsContext.openedChests.total && movement.nextMove.door) {
+      alert('Você ganhou!');      
+    }
   });
 
   return{

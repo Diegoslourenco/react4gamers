@@ -1,8 +1,8 @@
 import React from 'react';
 import Tile from './Tile';
-import {canvas} from '../../context/canvas/helpers'
+import { CanvasContext } from '../../context/canvas';
 
-function getCanvasMap() {
+function getCanvasMap(canvas) {
     
   const tileArray = [];
   
@@ -13,9 +13,10 @@ function getCanvasMap() {
       const canvasX = canvasY[x]; 
 
       const position = {x: x, y: y }; //pegando a posição
-      const text = canvas[y][x]; //pegando o valor exato 
+      const text = canvas[y][x] || canvasX; //pegando o valor exato 
+      const key = `${x}-${y}`;
 
-      tileArray.push(<Tile position={position} text={text} />)
+      tileArray.push(<Tile key={key} position={position} text={text} />)
     }
   }
 
@@ -23,7 +24,9 @@ function getCanvasMap() {
 }
 
 function Debugger() {
-  const tiles = getCanvasMap();
+  const canvasContext = React.useContext(CanvasContext);
+  const tiles = getCanvasMap(canvasContext.canvas);
+
   return(
     <div>
       {tiles}
